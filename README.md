@@ -1,5 +1,5 @@
 # mapsearchlist
-A simple Google Maps list search
+A simple Google Maps list search plugin for wordpress
 
 # Map List Search
 * Contributors: monsenhor
