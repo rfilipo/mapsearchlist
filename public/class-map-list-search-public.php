@@ -60,7 +60,11 @@ class Map_List_Search_Public {
 	 * @since    1.0.0
 	 */
 	function map_list_facade($my_content) {
-             $my_content =  "<h1>Sou o Facade</h1>\n";
+             
+             if(isset( $wp_query->query_vars['mls'] ) && 
+                       $wp_query->query_vars['mls']==1) {
+
+             }
              return $my_content;
 	}
 
