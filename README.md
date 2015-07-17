@@ -1,7 +1,7 @@
 # mapsearchlist
 A simple Google Maps list search
 
-=== Map List Search ===
+# Map List Search
 Contributors: monsenhor
 Donate link: http://kobkob.org/
 Tags: list, maps, search
@@ -13,7 +13,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Implements search facilities on a list of companies. Google Maps view.
 
-== Description ==
+# Description
 
 Map List Search implements a search engine on a list of companies showing
 the results with informations and this Google Map.
@@ -24,7 +24,7 @@ https://developers.google.com/maps/documentation/javascript/tutorial#api_key
 
 Using this software with the default key will limit results to 2000 Maps/day.
 
-== Installation ==
+# Installation
 
 This section describes how to install the plugin and get it working.
 
@@ -33,7 +33,7 @@ This section describes how to install the plugin and get it working.
 1. Place `<?php do_action('map_list_search_hook'); ?>` in your templates
 1. Set the options for the plugin.
 
-== Changelog ==
+Changelog
 
-= 1.0 =
+1.0
 First release
