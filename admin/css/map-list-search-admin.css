@@ -1,0 +1,23 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+.mls-sign{
+     font-size:9px;
+     float:right;
+     clear:both;
+}
+div.map-list-search-admin-dashboard {
+margin: 10px;
+width: 490px;
+height: 260px;
+}
+div.map-list-search-admin-dashboard div.mls-menu {
+    float:left;
+}
+div.map-list-search-admin-dashboard div.mls-logo {
+    float:right;
+    background-image: url('../../public/img/logo.png');
+    width:256px;
+    height:256px;
+}

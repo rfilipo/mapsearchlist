@@ -1,0 +1,317 @@
+<?php
+/**
+ * The template for displaying Search Results pages
+ *
+ * @package WordPress
+ * @subpackage Twenty_Fourteen
+ * @since Twenty Fourteen 1.0
+ */
+
+get_header(); ?>
+ 
+
+<?php
+global $wp_query;
+
+// Special search for detailed maplist query form
+if(isset( $wp_query->query_vars['mls'] ) && $wp_query->query_vars['mls']==1) {
+    $my_query_flag = "";
+    $my_field_flag = "";
+    $posts_found = 0;
+    update_option( 'posts_per_page', -1 ); // show all records
+?>
+
+    <?php if ( have_posts() ) : ?>
+<script>
+jQuery.noConflict();
+
+// create global array vars
+var my_id = [];
+var marker = [];
+var boxText = [];
+var myOptions = [];
+var ib = [];
+var my_html = [];
+var latitude = [];
+var longitude = [];
+var locations = [];
+</script>
+
+        <?php if(isset( $wp_query->query_vars['mls_name'] )) : ?>
+
+<!-- Search by name  -->
+<?php $my_query_flag = "mls_name";?>
+<?php $my_field_flag = "name";?>
+<header class="page-header">
+   <h3>Search for name: <?php echo $wp_query->query_vars['mls_name']; ?></h3>
+</header><!-- .page-header -->
+
+        <?php elseif(isset( $wp_query->query_vars['city'] )) : ?>
+ 
+<!-- Search by city  -->
+<?php $my_query_flag = "city";?>
+<?php $my_field_flag = "city";?>
+<header class="page-header">
+   <h3>Search for city: <?php echo $wp_query->query_vars['city'];?></h3>
+</header><!-- .page-header -->
+
+       <?php elseif(isset( $wp_query->query_vars['zip'] )) : ?>
+ 
+<!-- Search by zip  -->
+<?php $my_query_flag = "zip";?>
+<?php $my_field_flag = "postalcode";?>
+<header class="page-header">
+   <h3>Search for postal code: <?php echo $wp_query->query_vars['zip'];?></h3>
+</header><!-- .page-header -->
+
+       <?php elseif(isset( $wp_query->query_vars['state'] )) : ?>
+ 
+<!-- Search by state  -->
+<?php $my_query_flag = "state";?>
+<?php $my_field_flag = "stateprovince";?>
+   <h3>Search for state: <?php echo $wp_query->query_vars['state'];?></h3>
+
+       <?php elseif(isset( $wp_query->query_vars['country'] )) : ?>
+ 
+<!-- Search by country  -->
+<?php $my_query_flag = "country";?>
+<?php $my_field_flag = "country";?>
+<header class="page-header">
+   <h3>Search for country: <?php echo $wp_query->query_vars['country'];?></h3>
+</header><!-- .page-header -->
+
+       <?php else : //no query_var is set .. hmmm ?>
+
+<h3>Something very wrong happened, sorry about this ... :(</h3>
+
+        <?php endif; ?>
+
+<div id="mls-entries">
+	<?php while ( have_posts() ) : the_post();
+	$my_fields_a = get_post_meta(get_the_ID(), 'contact_information');
+        $my_coordinates_a = get_post_meta(get_the_ID(), 'map_coordinates');
+        if (isset($my_fields_a[0])){
+	$my_fields = $my_fields_a[0];
+        $my_coordinates = $my_coordinates_a[0];
+//echo "<pre>".$wp_query->query_vars[$my_query_flag]."</pre>";
+//echo "<pre>-- ".$my_fields[$my_field_flag]."</pre>";
+	$preg = "/".$wp_query->query_vars[$my_query_flag]."/";
+	if (preg_match($preg,$my_fields[$my_field_flag])){?>
+
+<!-- //////// record from ID: <?php echo get_the_ID(); ?>  ///////// -->
+<div class='mls-entry'>
+
+		<?php the_title( '<h1 class="entry-title"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h1>' );
+		//get_template_part( 'content', get_post_format() );
+                $posts_found ++;
+                $last_id = get_the_ID();
+                echo "<p><span class='fields'>".$my_fields['street'] ."<br>"
+                .$my_fields['city']."/"
+                .$my_fields['stateprovince'].", "
+                .$my_fields["country"]." "
+                .$my_fields["postalcode"]
+                ."</span><p><br>"; ?>
+</div><!-- mls entry -->
+
+        <?php if( $my_query_flag == 'country' || $my_query_flag == 'city' ||  $my_query_flag == 'state' || $my_query_flag == 'zip'  ) : ?>
+
+
+<script>
+my_id[<?php echo ($posts_found -1);?>] = <?php echo get_the_ID(); ?>;
+console.log('Marker for id: <?php echo get_the_ID(); ?>');
+console.log(my_id);
+latitude[<?php echo get_the_ID(); ?>]  = <?php echo $my_coordinates['latitude'];?> ;
+longitude[<?php echo get_the_ID(); ?>] = <?php echo $my_coordinates['longitude'];?>;
+my_html[<?php echo get_the_ID(); ?>] = "";
+
+locations[<?php echo ($posts_found -1);?>] = [
+ my_id[<?php echo ($posts_found -1);?>],
+ latitude[<?php echo get_the_ID(); ?>],   
+ longitude[<?php echo get_the_ID(); ?>]
+];	 
+
+<?php
+	//$my_fields = get_post_meta(get_the_ID(), 'contact_information')[0];
+	//var_dump($my_fields);
+	foreach ($my_fields as $key=>$value){
+            $value = esc_html( $value ); // protect javascript
+            if ( $key == 'name') {
+	           echo 'my_html['. get_the_ID().'] += \'<h1 class="'.$key.'">'.$value.'</h1> \';'."\n";
+            } else {
+	           echo 'my_html['. get_the_ID().'] += \'<span class="'.$key.'">'.$value.'</span> \';'."\n";
+            }
+            if ( $key == 'country' || 
+                 $key == 'street' || 
+                 $key == 'name' || 
+                 $key == 'url' || 
+                 $key == 'email') {
+                   echo "my_html[". get_the_ID()."] += '<br>'"."\n";
+            } else {
+                   echo "\n";
+            }
+	}
+	?>
+</script>
+<!-- ////////////////////////////////////////////////////////// -->
+ <?php endif; ?>
+
+
+
+        <?php
+	}
+        }else{//echo "<h1>ID: ".get_the_ID()."</h1>";
+        }
+	endwhile;?>
+</div><!-- mls-entries -->
+
+<?php if( $posts_found > 0 && ( $my_query_flag == 'city' ||  $my_query_flag == 'state' || $my_query_flag == 'zip' || $my_query_flag == 'country')  ) : ?>
+<!-- Google Map -->
+<?php
+$my_coordinates_a = get_post_meta($last_id, 'map_coordinates');
+$my_coordinates = $my_coordinates_a[0];
+?>
+<div id="map-canvas-frame-multiple">
+<div id="map-canvas"></div>
+</div><!-- map-canvas-frame-multiple -->
+<script>
+/*
+ * Create the map centering in the last record
+ */
+console.log('Define map');
+var map;
+function initialize() {
+  console.log('INIT');
+  console.log(locations);
+  var bound = new google.maps.LatLngBounds();
+  for (i = 0; i < locations.length; i++) {
+      bound.extend( new google.maps.LatLng(locations[i][1], locations[i][2]) );
+  }
+  //var mapLatitude  = <?php echo $my_coordinates['latitude'];?> ;
+  //var mapLongitude = <?php echo $my_coordinates['longitude'];?>;
+  var mapOptions = {
+    center: bound.getCenter(),
+    /*center: { 
+	lat: mapLatitude, 
+	lng: mapLongitude
+    },*/
+    zoom: 8
+  };
+  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+  map.setCenter(bound.getCenter());
+  map.fitBounds(bound);
+  // create the info boxes
+  for (var i = 0; i < my_id.length; i++) {
+	marker[my_id[i]] = new google.maps.Marker({
+		 map: map,
+		 draggable: false,
+		 position: new google.maps.LatLng(latitude[my_id[i]], longitude[my_id[i]]),
+		 visible: true
+		});
+			
+	boxText[my_id[i]] = document.createElement("div");
+	boxText[my_id[i]].style.cssText = "border: 1px solid black; margin-top: 5px; background: white; padding: 10px;";
+	boxText[my_id[i]].innerHTML = my_html[my_id[i]];
+			
+	myOptions[my_id[i]] = {
+		 content: boxText[my_id[i]]
+		,disableAutoPan: false
+		,maxWidth: 0
+		,pixelOffset: new google.maps.Size(-100, 0)
+		,zIndex: null
+		,boxStyle: { 
+		  background: "url('tipbox.gif') no-repeat"
+		  ,opacity: 0.75
+		  ,width: "200px"
+		 }
+		,closeBoxMargin: "5px 2px 2px 2px"
+		,closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif"
+		,infoBoxClearance: new google.maps.Size(1, 1)
+		,isHidden: false
+		,pane: "floatPane"
+		,enableEventPropagation: false
+	  };
+
+	ib[my_id[i]] = new InfoBox(myOptions[my_id[i]]);
+	ib[my_id[i]].open(map, marker[my_id[i]]);
+  }
+
+}
+
+//
+
+
+</script>
+<?php endif; ?>
+<?php if ($posts_found == 0) : ?>
+<h1>Sorry. No results found in this search.<h1>
+<?php endif; ?>
+<div class="navigation">
+ <div class="alignleft"><?php previous_posts_link('&laquo; Previous Entries') ?></div>
+ <div class="alignright"><?php next_posts_link('Next Entries &raquo;','') ?></div>
+ </div>
+    <?php else :  // no have posts
+    get_template_part( 'content', 'none' );
+
+    endif;
+?>
+
+
+<?php
+}else{
+// Normal search query, no mls query var
+?>
+
+	<section id="primary" class="content-area">
+		<div id="content" class="site-content" role="main">
+
+			<?php if ( have_posts() ) : ?>
+
+			<header class="page-header">
+				<h1 class="page-title"><?php printf( __( 'Search Results for: %s', 'twentyfourteen' ), get_search_query() ); ?></h1>
+			</header><!-- .page-header -->
+
+				<?php
+					// Start the Loop.
+					while ( have_posts() ) : the_post();
+
+						/*
+						 * Include the post format-specific template for the content. If you want to
+						 * use this in a child theme, then include a file called called content-___.php
+						 * (where ___ is the post format) and that will be used instead.
+						 */
+						get_template_part( 'content', get_post_format() );
+
+					endwhile;
+					// Previous/next post navigation.
+					//twentyfourteen_paging_nav(); ?>
+<div class="navigation">
+ <div class="alignleft"><?php previous_posts_link('&laquo; Previous Entries') ?></div><div class="alignright"><?php next_posts_link('Next Entries &raquo;','') ?></div></div> <?php
+
+				else :
+					// If no content, include the "No posts found" template.
+					get_template_part( 'content', 'none' );
+
+				endif;
+			?>
+
+		</div><!-- #content -->
+	</section><!-- #primary -->
+
+<p><small>Map List Search by monsenhor</small>
+<?php
+}
+get_sidebar( 'content' );
+get_sidebar();
+get_footer();
+?>
+
+<script>
+ 
+jQuery( document ).ready(function( $ ) {
+   //$( "#main" ).addClass( "map-list-multiple-map" );
+<?php if( $posts_found > 0 && ( $my_query_flag == 'city' ||  $my_query_flag == 'state' || $my_query_flag == 'zip' || $my_query_flag == 'country')  ) : ?>
+   console.log('Hooking map to window.load()');
+   google.maps.event.addDomListener(window, 'load', initialize);
+<?php endif;?>
+});
+</script>

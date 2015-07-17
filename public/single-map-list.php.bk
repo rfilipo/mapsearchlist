@@ -1,0 +1,154 @@
+<?php
+/**
+ * The Template for displaying all single map list
+ *
+ * @package Map List Search
+ * @subpackage public
+ * @since 1.0
+ */
+get_header();
+?>
+<div id="primary" class="map-list-content-area">
+    <div id="content" class="map-list-content" role="main">
+
+        <?php
+the_title( '<header class="entry-header"><h1 class="entry-title">', '</h1></header><!-- .entry-header -->' );
+
+$my_fields_a = get_post_meta(get_the_ID(), 'contact_information');
+$my_fields = $my_fields_a[0];
+$my_coordinates_a = get_post_meta(get_the_ID(), 'map_coordinates');
+$my_coordinates = $my_coordinates_a[0];
+
+// Map List content
+if ($my_fields['areas']) {
+    echo '<span class="map-list-subtitle">'.$my_fields['contact'].'</span>';
+}
+			?>
+
+<!-- /////////////////// Map List Panel /////////////////////// -->
+<div id="map-list-canvas" class="list">
+<div class="map-list-info">
+<h3>Contact Information:</h3>
+<?php
+//var_dump($my_fields);
+//foreach ($my_fields as $key=>$value){
+  //  echo '<li>'.$key.': '.$value.'</li>';
+//}
+
+
+	foreach ($my_fields as $key=>$value){
+            $value = esc_html( $value ); // protect javascript
+            if ( $key == 'name') {
+	           echo 'my_html += \'<h1 class="'.$key.'">'.$value.'</h1> \';'."\n";
+            } else {
+	           echo 'my_html += \'<span class="'.$key.'">'.$value.'</span> \';'."\n";
+            }
+            if ( $key == 'country' || 
+                 $key == 'street' || 
+                 $key == 'name' || 
+                 $key == 'url' || 
+                 $key == 'email') {
+                   echo "my_html[". get_the_ID()."] += '<br>'"."\n";
+            } else {
+                   echo "\n";
+            }
+	}
+	?>
+
+
+
+
+</div>
+<hr>
+
+<div class="map-list-coordinates">
+<h3>Map Coordinates:</h3>
+<?php
+echo '<p>Lat: '.$my_coordinates['latitude'].' Long: '.$my_coordinates['longitude'];
+?>
+</div>
+<div id="map-canvas-frame">
+<div id="map-canvas"></div>
+</div>
+<p><small>Map List Search by monsenhor</small>
+</div>
+<script>
+
+/*
+ * Create the map for this list record
+ */
+function initialize() {
+  var latitude  = <?php echo $my_coordinates['latitude'];?> ;
+  var longitude = <?php echo $my_coordinates['longitude'];?>;
+  var my_html = "<h3>Contact Information:</h3>";
+<?php
+//$my_fields = get_post_meta(get_the_ID(), 'contact_information')[0];
+//var_dump($my_fields);
+foreach ($my_fields as $key=>$value){
+    echo 'my_html += "<li>'.$key.': '.$value.'</li>";
+';
+}
+?>
+  var mapOptions = {
+    mapTypeControl: true,
+    center: { 
+	lat: latitude, 
+	lng: longitude
+    },
+    zoom: 17
+  };
+  var map = new google.maps.Map(document.getElementById('map-canvas'),
+      mapOptions);
+
+  var marker = new google.maps.Marker({
+	 map: map,
+	 draggable: true,
+	 position: new google.maps.LatLng(latitude, longitude),
+	 visible: true
+	});
+		
+        var boxText = document.createElement("div");
+        boxText.style.cssText = "border: 1px solid black; margin-top: 10px; background: white; padding-left: 20px;";
+        boxText.innerHTML = my_html;
+		
+	var myOptions = {
+		 content: boxText
+		,disableAutoPan: false
+		,maxWidth: 0
+		,pixelOffset: new google.maps.Size(-140, 0)
+		,zIndex: null
+		,boxStyle: { 
+		  background: "url('tipbox.gif') no-repeat"
+		  ,opacity: 0.75
+		  ,width: "280px"
+		 }
+		,closeBoxMargin: "10px 2px 2px 2px"
+		,closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif"
+		,infoBoxClearance: new google.maps.Size(1, 1)
+		,isHidden: false
+		,pane: "floatPane"
+		,enableEventPropagation: false
+	};
+
+	var ib = new InfoBox(myOptions);
+	ib.open(map, marker);
+
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+
+//
+
+</script>
+<!-- ////////////////////////////////////////////////////////// -->
+
+
+
+
+	</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+<?php
+get_sidebar( 'content' );
+//get_sidebar();
+get_footer();
