@@ -2,14 +2,14 @@
 A simple Google Maps list search
 
 # Map List Search
-Contributors: monsenhor
-Donate link: http://kobkob.org/
-Tags: list, maps, search
-Requires at least: 3.0.1
-Tested up to: 3.4
-Stable tag: 4.3
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+* Contributors: monsenhor
+* Donate link: http://kobkob.org/
+* Tags: list, maps, search
+* Requires at least: 3.0.1
+* Tested up to: 3.4
+* Stable tag: 4.3
+* License: GPLv2 or later
+* License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Implements search facilities on a list of companies. Google Maps view.
 
